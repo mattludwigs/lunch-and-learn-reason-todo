@@ -3,7 +3,7 @@ type newTodo = string;
 
 type state = {
     todoItems: list(todoItem),
-    newTodo: string
+    newTodo: newTodo
 };
 
 type action =
