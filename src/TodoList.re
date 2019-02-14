@@ -1,10 +1,13 @@
 type todoItem = string;
+type newTodo = string;
 
 type state = {
     todoItems: list(todoItem),
+    newTodo: string
 };
 
 type action =
+  | UpdateNewTodo(newTodo)
   | AddTodo(todoItem)
   | RemoveTodo;
 
@@ -27,10 +30,11 @@ let renderTodoList = (todos) => {
 
 let make = (_children) => {
     ...component,
-    initialState: () => { todoItems: [] },
+    initialState: () => { todoItems: [], newTodo: "" },
     reducer: (action, state) => {
         switch (action) {
-        | AddTodo(todoItem) => ReasonReact.Update({todoItems: state.todoItems @ [todoItem]})
+        | UpdateNewTodo(newTodo) => ReasonReact.Update({ ...state, newTodo: newTodo })
+        | AddTodo(todoItem) => ReasonReact.Update({ newTodo: "", todoItems: state.todoItems @ [todoItem]}) 
         | RemoveTodo => ReasonReact.Update(state)
         }
     },
@@ -38,7 +42,10 @@ let make = (_children) => {
       <div>
         <h1>{ReasonReact.string("Todo List")}</h1>
         (renderTodoList(self.state.todoItems))
-        <button onClick=(_event => self.send(AddTodo("learn reason")))>
+        <input 
+            value={self.state.newTodo}
+            onChange=(event => self.send(UpdateNewTodo(ReactEvent.Form.target(event)##value)))  />
+        <button onClick=(_event => self.send(AddTodo(self.state.newTodo))) >
           {ReasonReact.string("Add To Do")}
         </button>
       </div>
